@@ -1,21 +1,14 @@
   function initMap() {
         var directionsService = new google.maps.DirectionsService;
-        var directionsDisplay = new google.maps.DirectionsRenderer({
-          draggable: true,
-          directionsDisplay.setMap(map);
-
-        document.getElementById('submit').addEventListener('click', function() {
-          calculateAndDisplayRoute(directionsService, directionsDisplay);
-        }); 
-    
-        directionsDisplay.addListener('directions_changed', function() {
-          computeTotalDistance(directionsDisplay.getDirections());
-        });
+        var directionsDisplay = new google.maps.DirectionsRenderer;
         var map = new google.maps.Map(document.getElementById('map'), {
           zoom: 8,
           center: {lat: 23.69, lng: 120.96}
         });
-        
+        directionsDisplay.setMap(map);
+        document.getElementById('submit').addEventListener('click', function() {
+          calculateAndDisplayRoute(directionsService, directionsDisplay);
+        });
       }
 
       function calculateAndDisplayRoute(directionsService, directionsDisplay) {
