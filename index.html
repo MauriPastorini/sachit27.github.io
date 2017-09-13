@@ -130,7 +130,8 @@ document.getElementById('start2').value,
           var routeSegment = y + 1;
           summaryPanel.innerHTML += route.legs[y].start_address + ' to ';
           summaryPanel.innerHTML += route.legs[y].end_address + '<br>';
-          summaryPanel.innerHTML += route.legs[y].duration.text + '<br><br>';
+          summaryPanel.innerHTML += route.legs[y].duration.text + '<br>';
+          summaryPanel.innerHTML += route.legs[y].distance.text + '<br><br>';
           summaryPanel.innerHTML += "Particles  (PM2.5)." + " " + Math.floor((Math.random() * 100) + 1)+'<br><br>';
                 summaryPanel.innerHTML += "ozone  ." + " " + Math.floor((Math.random() * 100) + 1)+15 +'<br><br>';
                   summaryPanel.innerHTML += "Air Quality Index (AQI)" + " " + Math.floor((Math.random() * 100) + 1) +'<br><br>';
