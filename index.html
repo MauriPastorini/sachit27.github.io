@@ -5,29 +5,6 @@
     <meta charset="utf-8">
     <title>Waypoints in directions</title>
     <style>
-      #left-panel {
-        font-family: 'Roboto','sans-serif';
-        line-height: 30px;
-        padding-left: 10px;
-      }
-      #left-panel select, #left-panel input {
-        font-size: 15px;
-      }
-      #left-panel select {
-        width: 100%;
-      }
-      #left-panel i {
-        font-size: 12px;
-      }
-      #left-panel {
-        margin: 20px;
-        border-width: 2px;
-        width: 20%;
-        height: 400px;
-        float: left;
-        text-align: left;
-        padding-top: 0;
-      }
       #right-panel {
         font-family: 'Roboto','sans-serif';
         line-height: 30px;
@@ -67,12 +44,17 @@
         background-color: #FFEE77;
         padding: 10px;
       }
+      #drag-panel {
+        margin-top: 10px;
+        background-color: #FFEE77;
+        padding: 10px;
+      }
     </style>
   </head>
   <body>
     <div id="map"></div>
     <div id="right-panel">
-    <div id="left-panel">  
+    <div id="drag-panel">  
     <div>
     <b>Start:</b>
     <div id="start">
