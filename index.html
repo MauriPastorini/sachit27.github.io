@@ -119,6 +119,7 @@ document.getElementById('start2').value,
        summaryPanel.innerHTML = '';
        for (var x = 0; x < result.routes.length; x++) {
          new google.maps.DirectionsRenderer({
+           draggable: true,
            map: map,
            directions: result,
            routeIndex: x
