@@ -44,11 +44,7 @@
         background-color: #FFEE77;
         padding: 10px;
       }
-      #drag-panel {
-        margin-top: 10px;
-        background-color: #FFEE77;
-        padding: 10px;
-      }
+      
     </style>
   </head>
   <body>
@@ -101,7 +97,10 @@
         var directionsDisplay = new google.maps.DirectionsRenderer({
           draggable: true,
           map: map,
-          panel: document.getElementById('right-panel')
+          directionsDisplay.setMap(map);
+
+          document.getElementById('submit').addEventListener('click', function() {
+          calculateAndDisplayRoute(directionsService, directionsDisplay);
         }); 
         
         directionsDisplay.addListener('directions_changed', function() {
