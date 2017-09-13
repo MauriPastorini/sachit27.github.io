@@ -2,10 +2,9 @@
         var directionsService = new google.maps.DirectionsService;
         var directionsDisplay = new google.maps.DirectionsRenderer({
           draggable: true,
-          map: map,
           directionsDisplay.setMap(map);
 
-          document.getElementById('submit').addEventListener('click', function() {
+        document.getElementById('submit').addEventListener('click', function() {
           calculateAndDisplayRoute(directionsService, directionsDisplay);
         }); 
     
