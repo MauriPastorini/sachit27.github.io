@@ -6,9 +6,9 @@
           panel: document.getElementById('right-panel')
         });  
         var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 6,
+          zoom: 10,
           center: {lat: 23.69, lng: 120.96}
-        };
+        });
         directionsDisplay.setMap(map);
 
         document.getElementById('submit').addEventListener('click', function() {
