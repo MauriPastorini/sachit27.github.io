@@ -3,7 +3,10 @@
         var directionsDisplay = new google.maps.DirectionsRenderer({
           draggable: true,
           map: map,
-          panel: document.getElementById('drag-panel')
+          directionsDisplay.setMap(map);
+
+          document.getElementById('submit').addEventListener('click', function() {
+          calculateAndDisplayRoute(directionsService, directionsDisplay);
         }); 
     
         directionsDisplay.addListener('directions_changed', function() {
@@ -13,11 +16,7 @@
           zoom: 8,
           center: {lat: 23.69, lng: 120.96}
         });
-        directionsDisplay.setMap(map);
-
-        document.getElementById('submit').addEventListener('click', function() {
-          calculateAndDisplayRoute(directionsService, directionsDisplay);
-        });
+        
       }
 
       function calculateAndDisplayRoute(directionsService, directionsDisplay) {
