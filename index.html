@@ -5,6 +5,29 @@
     <meta charset="utf-8">
     <title>Waypoints in directions</title>
     <style>
+      #left-panel {
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+      #left-panel select, #left-panel input {
+        font-size: 15px;
+      }
+      #left-panel select {
+        width: 100%;
+      }
+      #left-panel i {
+        font-size: 12px;
+      }
+      #left-panel {
+        margin: 20px;
+        border-width: 2px;
+        width: 20%;
+        height: 400px;
+        float: left;
+        text-align: left;
+        padding-top: 0;
+      }
       #right-panel {
         font-family: 'Roboto','sans-serif';
         line-height: 30px;
@@ -49,6 +72,7 @@
   <body>
     <div id="map"></div>
     <div id="right-panel">
+    <div id="left-panel">  
     <div>
     <b>Start:</b>
     <div id="start">
@@ -102,7 +126,7 @@
           computeTotalDistance(directionsDisplay.getDirections());
         });
         var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 10,
+          zoom: 8,
           center: {lat: 23.69, lng: 120.96}
         });
         directionsDisplay.setMap(map);
