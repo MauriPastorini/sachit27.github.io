@@ -1,162 +1,162 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <meta charset="utf-8">
-    <title>Waypoints in directions</title>
-    <style>
-      #right-panel {
-        font-family: 'Roboto','sans-serif';
-        line-height: 30px;
-        padding-left: 10px;
-      }
-      #right-panel select, #right-panel input {
-        font-size: 15px;
-      }
-      #right-panel select {
-        width: 100%;
-      }
-      #right-panel i {
-        font-size: 12px;
-      }
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-      #map {
-        height: 100%;
-        float: left;
-        width: 70%;
-        height: 100%;
-      }
-      #right-panel {
-        margin: 20px;
-        border-width: 2px;
-        width: 20%;
-        height: 400px;
-        float: left;
-        text-align: left;
-        padding-top: 0;
-      }
-      #directions-panel {
-        margin-top: 10px;
-        background-color: #FFEE77;
-        padding: 10px;
-      }
-      
-    </style>
-  </head>
-  <body>
-    <div id="map"></div>
-    <div id="right-panel"> 
-    <div>
-    <b>Start:</b>
-    <div id="start">
-      <label><span>From:</span> <input id="start2" type="text" name="from"></label>
-    </select>
-    <br>
-    <b>Waypoints:</b> <br>
-    <i>(Ctrl+Click or Cmd+Click for multiple selection)</i> <br>
-    <select multiple id="waypoints">
-      <option value="montreal, quebec">Montreal, QBC</option>
-      <option value="toronto, ont">Toronto, ONT</option>
-        <option value="chicago, il">Battery Tunnel</option>
-
-          <option value="chicago, il">Brooklyn Bridge</option>
-      <option value="winnipeg, mb">Winnipeg</option>
-      <option value="fargo, nd">Fargo</option>
-      <option value="calgary, ab">Calgary</option>
-      <option value="spokane, wa">Spokane</option>
-    </select>
-    <br>
-    <b>End:</b>
-    <div id="end">
-      <label><span>To:</span> <input id="end2" type="text" name="to"></label>
-    </select>
-    <br>
-      <input type="submit" id="submit">
-    </div>
-    <div id="floating-panel">
-    <b>Mode of Travel: </b>
-    <select id="mode">
-      <option value="DRIVING">Driving</option>
-      <option value="WALKING">Walking</option>
-      <option value="BICYCLING">Bicycling</option>
-      <option value="TRANSIT">Transit</option>
-    </select>
-    </div>
-
-    <div id="directions-panel"></div>
-    </div>
-    <script>
-      function initMap() {  
-        var directionsService = new google.maps.DirectionsService;
-        var directionsDisplay = new google.maps.DirectionsRenderer;
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 8,
-          center: {lat: 23.69, lng: 120.96}
-        });
-        directionsDisplay.setMap(map);
-        document.getElementById('submit').addEventListener('click', function() {
-          calculateAndDisplayRoute(directionsService, directionsDisplay);
-        });
-      }
-      function   calculateAndDisplayRoute(directionsService, directionsDisplay) {
-                  var selectedMode = document.getElementById('mode').value;
-  var request = {
-    origin:
-document.getElementById('start2').value,
-    destination: document.getElementById('end2').value,
-    travelMode: google.maps.TravelMode[selectedMode],
-    provideRouteAlternatives: true
-  };
-  directionsService.route(request, function(result, status) {
-     if (status === 'OK') {
-       directionsDisplay.setDirections(result);
-       var summaryPanel = document.getElementById('directions-panel');
-       summaryPanel.innerHTML = '';
-       for (var x = 0; x < result.routes.length; x++) {
-         new google.maps.DirectionsRenderer({
-           map: map,
-           directions: result,
-           routeIndex: x
-         });
-         summaryPanel.innerHTML += '<hr><br><b> Route ' + (x + 1) + ':<br>';
-        var route = result.routes[x];
-        for (var y = 0; y < route.legs.length; y++) {
-          var routeSegment = y + 1;
-          summaryPanel.innerHTML += route.legs[y].start_address + ' to ';
-          summaryPanel.innerHTML += route.legs[y].end_address + '<br>';
-          summaryPanel.innerHTML += route.legs[y].duration.text + '<br>';
-          summaryPanel.innerHTML += route.legs[y].distance.text + '<br><br>';
-          summaryPanel.innerHTML += "Particles  (PM2.5)." + " " + Math.floor((Math.random() * 100) + 1)+'<br><br>';
-                summaryPanel.innerHTML += "ozone  ." + " " + Math.floor((Math.random() * 100) + 1)+15 +'<br><br>';
-                  summaryPanel.innerHTML += "Air Quality Index (AQI)" + " " + Math.floor((Math.random() * 100) + 1) +'<br><br>';
-          var steps = route.legs[y].steps;
-          for (var z = 0; z < steps.length; z++) {
-            var nextSegment = steps[z].path;
-            summaryPanel.innerHTML += "<li>" + steps[z].instructions;
-            var dist_dur = "";
-            if (steps[z].distance && steps[z].distance.text) dist_dur += steps[z].distance.text;
-            if (steps[z].duration && steps[z].duration.text) dist_dur += "&nbsp;" + steps[z].duration.text;
-            if (dist_dur != "") {
-              summaryPanel.innerHTML += "(" + dist_dur + ")<br /></li>";
-            } else {
-              summaryPanel.innerHTML += "</li>";
-            }
-          }
-          summaryPanel.innerHTML += "<br>";
-        }
-      }
-    } else {
-      window.alert('Directions request failed due to ' + status);
-    }
-  });
+<head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+<meta charset="utf-8">
+<title>Waypoints in directions</title>
+<script src="./airapi.js"></script>
+<link rel="stylesheet" type="text/css" href="./index.css">
+<style>
+#right-panel {
+	font-family: 'Roboto','sans-serif';
+	line-height: 30px;
+	padding-left: 10px;
 }
-    </script>
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAogXCFYpylx0oKNcTJEQgaWFoHdk-TqqE&callback=initMap">
-    </script>
-  </body>
+#right-panel select, #right-panel input {
+	font-size: 15px;
+}
+#right-panel select {
+	width: 100%;
+}
+#right-panel i {
+	font-size: 12px;
+}
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+#map {
+	height: 100%;
+	float: left;
+	width: 70%;
+	height: 100%;
+}
+#right-panel {
+	margin: 20px;
+	border-width: 2px;
+	width: 20%;
+	height: 400px;
+	float: left;
+	text-align: left;
+	padding-top: 0;
+}
+	#directions-panel {
+	margin-top: 10px;
+	background-color: #FFEE77;
+	padding: 10px;
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="right-panel"> 
+	<b>Start:</b>
+	<div id="start">
+		<label><span>From:</span> <input id="start2" type="text" name="from"></label>
+		<br>
+		<b>Waypoints:</b>
+		<br>
+		<i>(Ctrl+Click or Cmd+Click for multiple selection)</i> <br>
+		<select multiple id="waypoints">
+			<option value="montreal, quebec">Montreal, QBC</option>
+			<option value="toronto, ont">Toronto, ONT</option>
+			<option value="chicago, il">Battery Tunnel</option>
+			<option value="chicago, il">Brooklyn Bridge</option>
+			<option value="winnipeg, mb">Winnipeg</option>
+			<option value="fargo, nd">Fargo</option>
+			<option value="calgary, ab">Calgary</option>
+			<option value="spokane, wa">Spokane</option>
+		</select>
+	</div>
+	<br>
+	<b>End:</b>
+	<div id="end">
+		<label><span>To:</span>
+		<input id="end2" type="text" name="to"></label>
+		<br>
+		<input type="submit" id="submit">
+	</div>
+	<br>
+	<div id="floating-panel">
+		<b>Mode of Travel: </b>
+		<select id="mode">
+			<option value="DRIVING">Driving</option>
+			<option value="WALKING">Walking</option>
+			<option value="BICYCLING">Bicycling</option>
+			<option value="TRANSIT">Transit</option>
+		</select>
+	</div>
+
+	<div id="directions-panel"></div>
+</div>
+<script>
+function initMap() {
+	var directionsService = new google.maps.DirectionsService;
+	var directionsDisplay = new google.maps.DirectionsRenderer;
+	var map = new google.maps.Map(document.getElementById('map'), {
+		zoom: 8,
+		center: {lat: 23.69, lng: 120.96}
+	});
+	directionsDisplay.setMap(map);
+	document.getElementById('submit').addEventListener('click', function() {
+		calculateAndDisplayRoute(directionsService, directionsDisplay);
+	});
+}
+function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+	var selectedMode = document.getElementById('mode').value;
+	var request = {
+		origin:document.getElementById('start2').value,
+		destination: document.getElementById('end2').value,
+		travelMode: google.maps.TravelMode[selectedMode],
+		provideRouteAlternatives: true
+	};
+	directionsService.route(request, function(result, status) {
+		if (status === 'OK') {
+			directionsDisplay.setDirections(result);
+			var summaryPanel = document.getElementById('directions-panel');
+			summaryPanel.innerHTML = '';
+			for (var x = 0; x < result.routes.length; x++) {
+				new google.maps.DirectionsRenderer({
+					map: map,
+					directions: result,
+					routeIndex: x
+				});
+				summaryPanel.innerHTML += '<hr><br><b> Route ' + (x + 1) + ':<br>';
+				var route = result.routes[x];
+				for (var y = 0; y < route.legs.length; y++) {
+					var routeSegment = y + 1;
+					summaryPanel.innerHTML += route.legs[y].start_address + ' to ';
+					summaryPanel.innerHTML += route.legs[y].end_address + '<br>';
+					summaryPanel.innerHTML += route.legs[y].duration.text + '<br>';
+					summaryPanel.innerHTML += route.legs[y].distance.text + '<br><br>';
+					summaryPanel.innerHTML += "Particles (PM2.5)." + " " + Math.floor((Math.random() * 100) + 1)+'<br><br>';
+					summaryPanel.innerHTML += "ozone." + " " + Math.floor((Math.random() * 100) + 1)+15 +'<br><br>';
+					summaryPanel.innerHTML += "Air Quality Index (AQI)" + " " + Math.floor((Math.random() * 100) + 1) +'<br><br>';
+					var steps = route.legs[y].steps;
+					for (var z = 0; z < steps.length; z++) {
+						var nextSegment = steps[z].path;
+						summaryPanel.innerHTML += "<li>" + steps[z].instructions;
+						var dist_dur = "";
+						if (steps[z].distance && steps[z].distance.text) dist_dur += steps[z].distance.text;
+						if (steps[z].duration && steps[z].duration.text) dist_dur += "&nbsp;" + steps[z].duration.text;
+						if (dist_dur != "") {
+							summaryPanel.innerHTML += "(" + dist_dur + ")<br /></li>";
+						} else {
+							summaryPanel.innerHTML += "</li>";
+						}
+					}
+					summaryPanel.innerHTML += "<br>";
+				}
+			}
+		} else {
+			window.alert('Directions request failed due to ' + status);
+		}
+	});
+}
+</script>
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAogXCFYpylx0oKNcTJEQgaWFoHdk-TqqE&callback=initMap">
+</script>
+</body>
 </html>
