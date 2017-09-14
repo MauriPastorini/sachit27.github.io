@@ -98,6 +98,8 @@ function initMap() {
 		zoom: 8,
 		center: {lat: 23.69, lng: 120.96}
 	});
+	var trafficLayer = new google.maps.TrafficLayer();
+        trafficLayer.setMap(map);
 	directionsDisplay.setMap(map);
 	document.getElementById('submit').addEventListener('click', function() {
 		calculateAndDisplayRoute(directionsService, directionsDisplay);
