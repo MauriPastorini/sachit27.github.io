@@ -5,7 +5,9 @@
           map: map,
           panel: document.getElementById('right-panel')
         });
-
+       directionsDisplay.addListener('directions_changed', function() {
+          computeTotalDistance(directionsDisplay.getDirections());
+        });
         var map = new google.maps.Map(document.getElementById('map'), {
           zoom: 8,
           center: {lat: 23.69, lng: 120.96}
