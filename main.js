@@ -7,6 +7,8 @@
         });
         var trafficLayer = new google.maps.TrafficLayer();
         trafficLayer.setMap(map);
+        var transitLayer = new google.maps.TransitLayer();
+        transitLayer.setMap(map);
         directionsDisplay.setMap(map);
         document.getElementById('submit').addEventListener('click', function() {
           calculateAndDisplayRoute(directionsService, directionsDisplay);
