@@ -1,15 +1,15 @@
 
 // shttp get request to server 
-function httpGetAsync(https://pm25.lass-net.org/en/, callback)
-{
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() { 
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-            callback(xmlHttp.responseText);
-    }
-    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
-    xmlHttp.send(null);
-}
+// function httpGetAsync( URL, callback )
+// {
+//     var xmlHttp = new XMLHttpRequest();
+//     xmlHttp.onreadystatechange = function() { 
+//         if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+//             callback(xmlHttp.responseText);
+//     }
+//     xmlHttp.open("GET", URL, true); // true for asynchronous 
+//     xmlHttp.send(null);
+// }
 // getting json data 
 function ProcessRequest() 
 {
@@ -34,8 +34,13 @@ function ProcessRequest()
 // posting json data into DOM  
 function UserAction() {
     var xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "https://pm25.lass-net.org/en/", false);
+    xhttp.open( "POST", "https://pm25.lass-net.org/data/last-all-airbox", false );
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send();
-    var response = JSON.parse(xhttp.responseText);
+    var response = JSON.parse( xhttp.responseText );
+
+    for( var i = 0 ; i = response[ "feeds" ].length ; i++ )
+    {
+        console.log( r[ "feeds" ][ i ][ s_d0 ] );
+    }
 }
