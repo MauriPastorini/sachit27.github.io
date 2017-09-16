@@ -58,9 +58,7 @@
               summaryPanel.innerHTML += route.legs[i].end_address + '<br>';
               summaryPanel.innerHTML += route.legs[i].duration.text + '<br>';
               summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
-                summaryPanel.innerHTML += "Particles  (PM2.5)." + " " + Math.floor((Math.random() * 100) + 1)+'<br><br>';
-                summaryPanel.innerHTML += "ozone  ." + " " + Math.floor((Math.random() * 100) + 1)+15 +'<br><br>';
-                  summaryPanel.innerHTML += "Air Quality Index (AQI)" + " " + Math.floor((Math.random() * 100) + 1) +'<br><br>';
+               
             }
           } else {
             window.alert('Directions request failed due to ' + status);
