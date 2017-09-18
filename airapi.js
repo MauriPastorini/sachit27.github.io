@@ -34,7 +34,7 @@ function ProcessRequest()
 // posting json data into DOM  
 function UserAction() {
     var xhttp = new XMLHttpRequest();
-    xhttp.open( "POST", "https://pm25.lass-net.org/data/last-all-airbox", false );
+    xhttp.open( "POST", "https://pm25.lass.net/data/last-all-airbox.json", false );
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send();
     var response = JSON.parse( xhttp.responseText );
