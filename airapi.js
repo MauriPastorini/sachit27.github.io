@@ -57,11 +57,7 @@ function UserAction() {
 	{
 		throw new Error( 'CORS not supported' );
 	} else {
-		var response = JSON.parse( xhr.responseText );
-		for( var i = 0 ; i = response[ "feeds" ].length ; i++ )
-		{
-			console.log( r[ "feeds" ][ i ][ s_d0 ] );
-		}
+		console.log( xhr.responseText )
 	}
 }
 
