@@ -42,50 +42,7 @@ function initMap() {
 	var inputTo = document.getElementById('txtToId');
 	var autocompleteFrom = new google.maps.places.Autocomplete(inputFrom);
 	var autocompleteTo = new google.maps.places.Autocomplete(inputTo);
-
-	/**
-	 * This listener is for adding the average to the routes panel. When all the routes are drawn and panel is builded by Google Maps Api, this listener is activated so
-	 * it can add the average information to the Html. Maybe it is a bit cofusing, but the fact is that is getting in the html so it can add to the correct tag
-	 * the average information.
-	 */
-	google.maps.event.addListener(map, 'idle', function() {
-		var root = document.getElementById("panel-routes").getElementsByTagName('div');
-		if(root.length != 0 && !isAverageAlreadyAddedToRoutes){
-			var div1 = root[0];
-			var div2 = div1.getElementsByTagName('div')[0];
-			var table = div2.getElementsByTagName('table')[0];
-			var tbody = div2.getElementsByTagName('tbody')[0];
-			var trs = div2.getElementsByTagName('tr');
-			if(trs.length != 0){
-				for(var x = 1; x<trs.length;x++){
-					var span = trs[x].getElementsByTagName('span')[0];
-					var bold = span.getElementsByTagName('b');
-					if(bold.length != 0){
-						for(var y = 1; y<bold.length;y++)
-							bold[y].innerHTML = "";
-					}
-					span.innerHTML += " <b>Average quality air: " + Math.round(routesQltyAverageAirValues[x-1] * 100) / 100 + "</b>";
-				}
-			} else {
-				var ol = div2.getElementsByTagName('ol');
-				if(ol.length != 0){
-					var ls = ol[0].getElementsByTagName('li');
-					for(var x = 0; x<ls.length;x++){
-						var div3 = ls[x].getElementsByTagName('div')[2];
-						//var span = div3.getElementsByTagName('span')[2];
-						var bold = div3.getElementsByTagName('b');
-						if(bold.length != 0){
-							for(var y = 0; y<bold.length;y++)
-								bold[y].innerHTML = "";
-						}
-						div3.innerHTML += " <b><br>Average quality air: " + Math.round(routesQltyAverageAirValues[x] * 100) / 100 + "</b>";
-				}
-			}
-			isAverageAlreadyAddedToRoutes = true;
-		}
-	}});
 }
-
 /**
  * This listener is for adding the average to the routes panel. When all the routes are drawn and panel is builded by Google Maps Api, this listener is activated so
  * it can add the average information to the Html. Maybe it is a bit cofusing, but the fact is that is getting in the html so it can add to the correct tag
@@ -112,18 +69,19 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, from, to
 
 function calculateAverageAndSetColorRoutes(result) {
 	cleanPolylinesAndAirAverages();
+	var table = "<table style='width: 100%''><colgroup><col span='1' style='width: 50%;'><col span='1' style='width: 50%;'></colgroup><tr><th>Route</th><th>Average Quality Air</th>"; //This line makes the HTML table for the routes and averages
 	for(var routePos = 0; routePos<result.routes.length; routePos++){ //Calculate average and paint route for each route
 		var currentRouteArray = result.routes[routePos];
 		var currentRoute = currentRouteArray.overview_path;
 		var sumAirValues = 0;
 		var cantAirValues = 0;
-
 		var previous = {};
 		for (var x = 0; x < currentRoute.length; x++) { //For each point in the route
 			var pos = new google.maps.LatLng(currentRoute[x].lat(), currentRoute[x].lng()); //Gets the coordinates
 			var lat = currentRoute[x].lat();
 			var lng = currentRoute[x].lng();
 			var point = NearestAirPointValue(lat,lng); //Method that returns the nearest quality air point
+			if(point == undefined) return; //Air api data is not ready
 			if(previous != {} && (point.gps_lat != previous.gps_lat || point.gps_lon != previous.gps_lon)){ //This condition is for not calculating the same point if it was the same as the previous
 				console.log("NEW AIR API POINT CLOSER TO ROUTE: ", point.s_d0, point);
 				sumAirValues = sumAirValues + point.s_d0;
@@ -131,18 +89,17 @@ function calculateAverageAndSetColorRoutes(result) {
 			}
 			previous = point;
 		}
-		manageRoutesColor(sumAirValues,cantAirValues, result.routes[routePos], routePos); //This method will calculate average and paint routes
+		var average = manageRoutesColor(sumAirValues,cantAirValues, result.routes[routePos], routePos); //This method will calculate average and paint routes
+		table += "<tr><td> "+ (routePos + 1) + "</td><td>" + Math.round(average * 100) / 100  + "</td></tr>";
 	}
+	var root = document.getElementById("directions-panel");
+	root.innerHTML = table +  "</table>"
 }
 
 
 function manageRoutesColor(sumAirValues,cantAirValues, route,routePos){
 	var average = sumAirValues/cantAirValues;
 	routesQltyAverageAirValues[routePos] = average;
-
-	console.log("SUM:",sumAirValues);
-	console.log("CANT:",cantAirValues);
-	console.log("AVERAGE:",average);
 
 	//This conditions are for painting the routes with the color that was parametrized in the top of this file
 	if (average < closerMargin.value) {
@@ -152,6 +109,7 @@ function manageRoutesColor(sumAirValues,cantAirValues, route,routePos){
 	} else{
 		paintRoute(higherMargin.color, route);
 	}
+	return average;
 }
 /**
  * This method paints the routes that are called Polylines
