@@ -2,7 +2,7 @@ var map; function getMap(){return map;};
 var geocoder;
 var routesQltyAverageAirValues = []; // This array contain the average values for each route after been calculated
 var isAverageAlreadyAddedToRoutes = false; // This boolean is for not adding several times the average information to the routes
-var polilynes = [];
+var polilynes = []; function getPolilynes(){return polilynes;}
 
 /**
  * This are parametrical values that you can change for your bussiness.
@@ -19,8 +19,8 @@ function initMap() {
 	geocoder = new google.maps.Geocoder();
 	map = new google.maps.Map(document.getElementById('map'), {
 		zoom: 8,
-		//center: {lat: 23.69, lng: 120.96}
-		center: {lat: 100, lng: 100}
+		center: {lat: 23.69, lng: 120.96}
+		//center: {lat: 100, lng: 100}
 	});
 
 	var directionsService = new google.maps.DirectionsService;
@@ -38,6 +38,7 @@ function initMap() {
 	directionsDisplay.setMap(map);
 
 	document.getElementById('submit').addEventListener('click', function() {
+		cleanPolylinesAndAirAverages();
 		var from = document.getElementById('txtFromId').value;
 		var to = document.getElementById('txtToId').value;
 		codeAddress(from, 'from');
@@ -90,7 +91,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, from, to
 }
 
 function calculateAverageAndSetColorRoutes(result) {
-	cleanPolylinesAndAirAverages();
+
 	var table = "<table style='width: 100%''><colgroup><col span='1' style='width: 50%;'><col span='1' style='width: 50%;'></colgroup><tr><th>Route</th><th>Average Quality Air</th>"; //This line makes the HTML table for the routes and averages
 	for(var routePos = 0; routePos<result.routes.length; routePos++){ //Calculate average and paint route for each route
 		var currentRouteArray = result.routes[routePos];

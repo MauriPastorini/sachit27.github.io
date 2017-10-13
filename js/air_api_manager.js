@@ -5,7 +5,7 @@ var airElementsData = []; //Array for saving Air Api results
 
 window.onload = function() {
   airElementsData = getData_hard().feeds;
-  startAlgorithmBestRoute();
+  
 //  httpGetAsync("https://pm25.lass-net.org/data/last-all-airbox.json", loadData);
 }
 
