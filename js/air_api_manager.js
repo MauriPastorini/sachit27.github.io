@@ -1,10 +1,12 @@
 var airElementsData = []; //Array for saving Air Api results
-
 /**
  * When the page is loaded, this method is called for making the Air Api consults. This method is called as soon as possible for making the services faster
  */
+
 window.onload = function() {
-  httpGetAsync("https://pm25.lass-net.org/data/last-all-airbox.json", loadData);
+  airElementsData = getData_hard().feeds;
+  startAlgorithmBestRoute();
+//  httpGetAsync("https://pm25.lass-net.org/data/last-all-airbox.json", loadData);
 }
 
 /**

@@ -1,4 +1,5 @@
-var map;
+var map; function getMap(){return map;};
+var geocoder;
 var routesQltyAverageAirValues = []; // This array contain the average values for each route after been calculated
 var isAverageAlreadyAddedToRoutes = false; // This boolean is for not adding several times the average information to the routes
 var polilynes = [];
@@ -15,9 +16,11 @@ var lineWeight = 11; //Route line weight
  * This method is called when Google maps script called the Google Maps Api.
  */
 function initMap() {
+	geocoder = new google.maps.Geocoder();
 	map = new google.maps.Map(document.getElementById('map'), {
 		zoom: 8,
-		center: {lat: 23.69, lng: 120.96}
+		//center: {lat: 23.69, lng: 120.96}
+		center: {lat: 100, lng: 100}
 	});
 
 	var directionsService = new google.maps.DirectionsService;
@@ -35,7 +38,12 @@ function initMap() {
 	directionsDisplay.setMap(map);
 
 	document.getElementById('submit').addEventListener('click', function() {
-		calculateAndDisplayRoute(directionsService, directionsDisplay,document.getElementById('txtFromId').value,document.getElementById('txtToId').value);
+		var from = document.getElementById('txtFromId').value;
+		var to = document.getElementById('txtToId').value;
+		codeAddress(from, 'from');
+		codeAddress(to,'to');
+
+		calculateAndDisplayRoute(directionsService, directionsDisplay, from,to);
 	});
 
 	var inputFrom = document.getElementById('txtFromId');
@@ -43,6 +51,20 @@ function initMap() {
 	var autocompleteFrom = new google.maps.places.Autocomplete(inputFrom);
 	var autocompleteTo = new google.maps.places.Autocomplete(inputTo);
 }
+
+function codeAddress(address, fromOrTo)
+{
+  geocoder.geocode( {address:address}, function(results, status)
+  {
+    if (status == google.maps.GeocoderStatus.OK)
+    {
+    	manageIncomingRoutes(results[0].geometry.location, fromOrTo);
+    } else {
+      alert('Geocode was not successful for the following reason: ' + status);
+   }
+  });
+}
+
 /**
  * This listener is for adding the average to the routes panel. When all the routes are drawn and panel is builded by Google Maps Api, this listener is activated so
  * it can add the average information to the Html. Maybe it is a bit cofusing, but the fact is that is getting in the html so it can add to the correct tag
