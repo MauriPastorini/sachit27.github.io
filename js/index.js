@@ -1,26 +1,28 @@
 var map; function getMap(){return map;};
 var geocoder;
-var routesQltyAverageAirValues = []; // This array contain the average values for each route after been calculated
+var actualRoutes;
 var isAverageAlreadyAddedToRoutes = false; // This boolean is for not adding several times the average information to the routes
 var polilynes = []; function getPolilynes(){return polilynes;}
+var refreshRoutesTask;
 
 /**
- * This are parametrical values that you can change for your bussiness.
- */
+* This are parametrical values that you can change for your bussiness.
+*/
 var closerMargin = { value: 10, color:"RED"};
 var mediumMargin = { value: 48, color:"YELLOW"};
 var higherMargin = { value: 50, color:"GREEN"};
 var lineWeight = 11; //Route line weight
+var timerToRefreshRoutes = 1000 * 60 * 6; //6 minutes
 
 /**
- * This method is called when Google maps script called the Google Maps Api.
- */
+* This method is called when Google maps script called the Google Maps Api.
+*/
+var selectedMode;
 function initMap() {
 	geocoder = new google.maps.Geocoder();
 	map = new google.maps.Map(document.getElementById('map'), {
 		zoom: 8,
 		center: {lat: 23.69, lng: 120.96}
-		//center: {lat: 100, lng: 100}
 	});
 
 	var directionsService = new google.maps.DirectionsService;
@@ -38,39 +40,60 @@ function initMap() {
 	directionsDisplay.setMap(map);
 
 	document.getElementById('submit').addEventListener('click', function() {
-		cleanPolylinesAndAirAverages();
+		cleanPolylinesAndAirAverages(directionsDisplay);
+		directionsDisplay = new google.maps.DirectionsRenderer({
+			map: map,
+			panel: document.getElementById('panel-routes') //Id where the panel of directions and suggestions will be shown. This panel is builded itself from Google Maps Api
+		});
+		directionsDisplay.setMap(map);
+
+		selectedMode = document.getElementById('media').value;
 		var from = document.getElementById('txtFromId').value;
 		var to = document.getElementById('txtToId').value;
-		codeAddress(from, 'from');
-		codeAddress(to,'to');
+		codeAddress(from,"from",selectedMode);
+		codeAddress(to,"to",selectedMode);
+		if (selectedMode != 'BICYCLING') {
+			calculateAndDisplayRoute(directionsService, directionsDisplay, from,to);
+		};
+		runRefreshTask(selectedMode);
 
-		calculateAndDisplayRoute(directionsService, directionsDisplay, from,to);
 	});
-
 	var inputFrom = document.getElementById('txtFromId');
 	var inputTo = document.getElementById('txtToId');
 	var autocompleteFrom = new google.maps.places.Autocomplete(inputFrom);
 	var autocompleteTo = new google.maps.places.Autocomplete(inputTo);
 }
 
-function codeAddress(address, fromOrTo)
-{
-  geocoder.geocode( {address:address}, function(results, status)
-  {
-    if (status == google.maps.GeocoderStatus.OK)
-    {
-    	manageIncomingRoutes(results[0].geometry.location, fromOrTo);
-    } else {
-      alert('Geocode was not successful for the following reason: ' + status);
-   }
-  });
+function runRefreshTask(type){
+	refreshRoutesTask = setInterval(function(){
+		console.log("Refreshed");
+		if(type != "BICYCLING"){
+			calculateAverageAndSetColorRoutes(actualRoutes);
+		} else{
+			callDrawBikePath();
+		}
+	}, timerToRefreshRoutes);
+}
+
+function stopRefreshingRoutes(){
+	clearInterval(refreshRoutesTask);
+}
+
+function codeAddress(address,fromOrTo,selectedMode){
+	geocoder.geocode( {address:address}, function(results, status){
+		if (status == google.maps.GeocoderStatus.OK){
+			manageIncomingRoutes(results[0].geometry.location,fromOrTo,selectedMode);
+		} else {
+			alert('Geocode was not successful for the following reason: ' + status);
+		}
+	});
 }
 
 /**
- * This listener is for adding the average to the routes panel. When all the routes are drawn and panel is builded by Google Maps Api, this listener is activated so
- * it can add the average information to the Html. Maybe it is a bit cofusing, but the fact is that is getting in the html so it can add to the correct tag
- * the average information.
- */
+* This listener is for adding the average to the routes panel. When all the routes are drawn and panel is builded by Google Maps Api, this listener is activated so
+* it can add the average information to the Html. Maybe it is a bit cofusing, but the fact is that is getting in the html so it can add to the correct tag
+* the average information.
+*/
 function calculateAndDisplayRoute(directionsService, directionsDisplay, from, to) {
 	var selectedMode = document.getElementById('media').value; //This The travel Mode
 	var request = {
@@ -84,6 +107,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, from, to
 			isAverageAlreadyAddedToRoutes = false;
 			calculateAverageAndSetColorRoutes(result); //If it is all OK, this method is going to calculate and paint the routes
 			directionsDisplay.setDirections(result);
+			// runRefreshTask();
 		} else {
 			alert("There is no results");
 		}
@@ -91,7 +115,6 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, from, to
 }
 
 function calculateAverageAndSetColorRoutes(result) {
-
 	var table = "<table style='width: 100%''><colgroup><col span='1' style='width: 50%;'><col span='1' style='width: 50%;'></colgroup><tr><th>Route</th><th>Average Quality Air</th>"; //This line makes the HTML table for the routes and averages
 	for(var routePos = 0; routePos<result.routes.length; routePos++){ //Calculate average and paint route for each route
 		var currentRouteArray = result.routes[routePos];
@@ -100,13 +123,11 @@ function calculateAverageAndSetColorRoutes(result) {
 		var cantAirValues = 0;
 		var previous = {};
 		for (var x = 0; x < currentRoute.length; x++) { //For each point in the route
-			var pos = new google.maps.LatLng(currentRoute[x].lat(), currentRoute[x].lng()); //Gets the coordinates
 			var lat = currentRoute[x].lat();
 			var lng = currentRoute[x].lng();
 			var point = NearestAirPointValue(lat,lng); //Method that returns the nearest quality air point
 			if(point == undefined) return; //Air api data is not ready
 			if(previous != {} && (point.gps_lat != previous.gps_lat || point.gps_lon != previous.gps_lon)){ //This condition is for not calculating the same point if it was the same as the previous
-				console.log("NEW AIR API POINT CLOSER TO ROUTE: ", point.s_d0, point);
 				sumAirValues = sumAirValues + point.s_d0;
 				cantAirValues++;
 			}
@@ -116,13 +137,13 @@ function calculateAverageAndSetColorRoutes(result) {
 		table += "<tr><td> "+ (routePos + 1) + "</td><td>" + Math.round(average * 100) / 100  + "</td></tr>";
 	}
 	var root = document.getElementById("directions-panel");
-	root.innerHTML = table +  "</table>"
+	root.innerHTML = table +  "</table>";
+	actualRoutes = result;
 }
 
 
 function manageRoutesColor(sumAirValues,cantAirValues, route,routePos){
 	var average = sumAirValues/cantAirValues;
-	routesQltyAverageAirValues[routePos] = average;
 
 	//This conditions are for painting the routes with the color that was parametrized in the top of this file
 	if (average < closerMargin.value) {
@@ -135,8 +156,8 @@ function manageRoutesColor(sumAirValues,cantAirValues, route,routePos){
 	return average;
 }
 /**
- * This method paints the routes that are called Polylines
- */
+* This method paints the routes that are called Polylines
+*/
 function paintRoute(color, route){
 	var polyline = new google.maps.Polyline({
 		path: [],
@@ -162,10 +183,15 @@ function paintRoute(color, route){
 }
 
 /**
- * This method is for clear all the routes and averages array
- */
-function cleanPolylinesAndAirAverages(){
-	var routesQltyAverageAirValues = [];
+* This method is for clear all the routes and averages array
+*/
+function cleanPolylinesAndAirAverages(directionsDisplay){
+	actualRoutes = null;
+	stopRefreshingRoutes();
+	cleanFromAndTo();
+	directionsDisplay.setMap(null);
+	var root = document.getElementById("panel-routes");
+	root.innerHTML = "";
 	for(var x = 0; x< polilynes.length; x++){
 		polilynes[x].setMap(null);
 	}

@@ -13,7 +13,7 @@ function test(){
   to_lat = 99;
 }
 
-function manageIncomingRoutes(location, fromOrTo){
+function manageIncomingRoutes(location, fromOrTo,selectedMode){
   if(fromOrTo == "from"){
     from_lat = location.lat();
     from_lng = location.lng();
@@ -25,9 +25,19 @@ function manageIncomingRoutes(location, fromOrTo){
   }
   if(from_lat != null && to_lat != null){
     startAlgorithmBestRoute();
-    from_lat = from_lng = to_lat = to_lng = null;
+    if (selectedMode == "BICYCLING"){
+			callDrawBikePath();
+		}
   }
 };
+
+function cleanFromAndTo(){
+  from_lat = from_lng = to_lat = to_lng = null;
+}
+
+function callDrawBikePath(){
+  drawBikePath(from_lat,from_lng,to_lat,to_lng);
+}
 
 function startAlgorithmBestRoute(){
   //test();
@@ -40,7 +50,7 @@ function startAlgorithmBestRoute(){
   // Four step
   var resCoordinates = castArrPosToArrCoordinates(res);
   // Five step
-  paintMyBestRoute(resCoordinates, getMap());
+  paintMyBestRoute(resCoordinates, "#FF0000", getMap());
 }
 
 //First step
@@ -118,11 +128,11 @@ function castArrPosToArrCoordinates(arr){
 }
 
 //Five step
-function paintMyBestRoute(arrCoord, map){
+function paintMyBestRoute(arrCoord, color, map){
   var bestAirApiPath = new google.maps.Polyline({
     path: arrCoord,
     geodesic: true,
-    strokeColor: '#FF0000',
+    strokeColor: color,
     strokeOpacity: 1.0,
     strokeWeight: 2
   });

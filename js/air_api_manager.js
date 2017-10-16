@@ -1,17 +1,15 @@
 var airElementsData = []; //Array for saving Air Api results
 /**
- * When the page is loaded, this method is called for making the Air Api consults. This method is called as soon as possible for making the services faster
- */
+* When the page is loaded, this method is called for making the Air Api consults. This method is called as soon as possible for making the services faster
+*/
 
 window.onload = function() {
-  airElementsData = getData_hard().feeds;
-  
-//  httpGetAsync("https://pm25.lass-net.org/data/last-all-airbox.json", loadData);
+  httpGetAsync("https://pm25.lass-net.org/data/last-all-airbox.json", loadData);
 }
 
 /**
- * This is a javascript get to the url of Air Api data
- */
+* This is a javascript get to the url of Air Api data
+*/
 function httpGetAsync(theUrl, callback){
   var xmlHttp = new XMLHttpRequest();
   xmlHttp.onreadystatechange = function() {
@@ -23,8 +21,8 @@ function httpGetAsync(theUrl, callback){
 }
 
 /**
- * This method paints the routes that are called Polylines
- */
+* This method paints the routes that are called Polylines
+*/
 function loadData(airData){
   var data = JSON.parse(airData);
   airElementsData = data.feeds;
@@ -32,15 +30,15 @@ function loadData(airData){
 }
 
 /**
- * This method is part of the algorithm to search closer points. It converts degrees to radians
- */
+* This method is part of the algorithm to search closer points. It converts degrees to radians
+*/
 function Deg2Rad(deg) {
   return deg * Math.PI / 180;
 }
 
 /**
- * This method is part of the algorithm to search closer points. It use Pythagoras to get the closer distance between the points
- */
+* This method is part of the algorithm to search closer points. It use Pythagoras to get the closer distance between the points
+*/
 function PythagorasEquirectangular(lat1, lon1, lat2, lon2) {
   lat1 = Deg2Rad(lat1);
   lat2 = Deg2Rad(lat2);
@@ -54,8 +52,8 @@ function PythagorasEquirectangular(lat1, lon1, lat2, lon2) {
 }
 
 /**
- * This method is called for getting the closer Air Api point of the latitude and longitude in the parameters
- */
+* This method is called for getting the closer Air Api point of the latitude and longitude in the parameters
+*/
 function NearestAirPointValue(latitude, longitude) {
   if(airElementsData.length ==0){
     alert("Air api data not ready");
@@ -72,7 +70,7 @@ function NearestAirPointValue(latitude, longitude) {
     var dif = PythagorasEquirectangular(latitude, longitude, latAir, longAir);
     if (dif < mindif) {
       closest = index;
-       elementMin = element;
+      elementMin = element;
       mindif = dif;
     }
   }
