@@ -1,17 +1,26 @@
+var keyGraphopper = "233693a8-be91-4ca0-b2ed-0a489e74f038"; //CHANGE GRAPHOOPPER API KEY. This is one of my own for testing
+var bykeElementsData;
+
+/**
+* This function makes the request to graphhopper for best route by byke
+*/
 function drawBikePath(latFrom,lngFrom,latTo,lngTo){
-	var key = "233693a8-be91-4ca0-b2ed-0a489e74f038";
 	var httpRequest = "https://graphhopper.com/api/1/route?point="
-	+ latFrom + "%2C" + lngFrom + "&point=" + latTo + "%2C" + lngTo + "&vehicle=bike&locale=de&key=" + key + "&points_encoded=false&instructions=false";
+	+ latFrom + "%2C" + lngFrom + "&point=" + latTo + "%2C" + lngTo + "&vehicle=bike&locale=de&key=" + keyGraphopper + "&points_encoded=false&instructions=false";
 	httpGetAsync(httpRequest,loadBikeData);
 }
 
 function loadBikeData(graphData){
 	var data = JSON.parse(graphData);
-	var bykeElementsData = data.paths[0].points.coordinates;
-	calculateBykeAverageAndSetColorRoutes(bykeElementsData);
+	bykeElementsData = data.paths[0].points.coordinates;
+	calculateBykeAverageAndSetColorRoutes();
 }
 
-function calculateBykeAverageAndSetColorRoutes(result) {
+/**
+* Similar as we did for calculating average for google maps routes, this is for bykes routes. Really Similar but not equal
+*/
+function calculateBykeAverageAndSetColorRoutes() {
+	var result = bykeElementsData;
 	var table = "<table style='width: 100%''><colgroup><col span='1' style='width: 50%;'><col span='1' style='width: 50%;'></colgroup><tr><th>Route</th><th>Average Quality Air</th>"; //This line makes the HTML table for the routes and averages
 	var sumAirValues = 0;
 	var cantAirValues = 0;
@@ -28,8 +37,6 @@ function calculateBykeAverageAndSetColorRoutes(result) {
 		previous = point;
 	}
 	var average = manageBykeRoutesColor(sumAirValues,cantAirValues,result); //This method will calculate average and paint routes
-	//var average = 5;
-
 	table += "<tr><td>1</td><td>" + Math.round(average * 100) / 100  + "</td></tr>";
 	var root = document.getElementById("directions-panel");
 	root.innerHTML = table +  "</table>"
@@ -70,6 +77,9 @@ function paintMyBestRouteByke(arrCoord, color, map){
 	polilynes.push(bestAirApiPath);
 }
 
+/**
+* This function center the map on the route created. For google maps routes we have this behaviour automatically, but for graphhopper routes we have to do it by hand
+*/
 function centerManually(arrCoord, map){
 	var midLat = (arrCoord[0].lat() + arrCoord[arrCoord.length - 1].lat())/2;
 	var midLng = (arrCoord[0].lng() + arrCoord[arrCoord.length - 1].lng())/2;

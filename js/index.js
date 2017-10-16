@@ -1,10 +1,3 @@
-var map; function getMap(){return map;};
-var geocoder;
-var actualRoutes;
-var isAverageAlreadyAddedToRoutes = false; // This boolean is for not adding several times the average information to the routes
-var polilynes = []; function getPolilynes(){return polilynes;}
-var refreshRoutesTask;
-
 /**
 * This are parametrical values that you can change for your bussiness.
 */
@@ -12,14 +5,20 @@ var closerMargin = { value: 10, color:"RED"};
 var mediumMargin = { value: 48, color:"YELLOW"};
 var higherMargin = { value: 50, color:"GREEN"};
 var lineWeight = 11; //Route line weight
-var timerToRefreshRoutes = 1000 * 60 * 6; //6 minutes
+var timerToRefreshRoutes = 1000 * 60 * 6; // 6 minutes for refreshing average and color of routes in the map
+
+var map; function getMap(){return map;};
+var geocoder;
+var actualRoutes;
+var polilynes = []; function getPolilynes(){return polilynes;}
+var refreshRoutesTask;
 
 /**
 * This method is called when Google maps script called the Google Maps Api.
 */
 var selectedMode;
 function initMap() {
-	geocoder = new google.maps.Geocoder();
+	geocoder = new google.maps.Geocoder(); //Geocoder neccesary for getting the latitude and longitude based on text address. This is for byke routes
 	map = new google.maps.Map(document.getElementById('map'), {
 		zoom: 8,
 		center: {lat: 23.69, lng: 120.96}
@@ -56,7 +55,6 @@ function initMap() {
 			calculateAndDisplayRoute(directionsService, directionsDisplay, from,to);
 		};
 		runRefreshTask(selectedMode);
-
 	});
 	var inputFrom = document.getElementById('txtFromId');
 	var inputTo = document.getElementById('txtToId');
@@ -64,8 +62,12 @@ function initMap() {
 	var autocompleteTo = new google.maps.places.Autocomplete(inputTo);
 }
 
+/**
+* This method is responsible of refreshing the routes when parametric time comes.
+*/
 function runRefreshTask(type){
 	refreshRoutesTask = setInterval(function(){
+		//The code inside this scope execute every timerToRefreshRoutes minutess.
 		console.log("Refreshed");
 		if(type != "BICYCLING"){
 			calculateAverageAndSetColorRoutes(actualRoutes);
@@ -75,10 +77,16 @@ function runRefreshTask(type){
 	}, timerToRefreshRoutes);
 }
 
+/**
+* Cancel refreshing when new route is consulted for starting again for the new route
+*/
 function stopRefreshingRoutes(){
 	clearInterval(refreshRoutesTask);
 }
 
+/**
+* This method is responsible of getting latitude and longitude based on text direction, and sending to myRoutes.js to later calculate best route 
+*/
 function codeAddress(address,fromOrTo,selectedMode){
 	geocoder.geocode( {address:address}, function(results, status){
 		if (status == google.maps.GeocoderStatus.OK){
@@ -104,10 +112,8 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, from, to
 	};
 	directionsService.route(request, function(result, status) {
 		if (status === 'OK') {
-			isAverageAlreadyAddedToRoutes = false;
 			calculateAverageAndSetColorRoutes(result); //If it is all OK, this method is going to calculate and paint the routes
 			directionsDisplay.setDirections(result);
-			// runRefreshTask();
 		} else {
 			alert("There is no results");
 		}
@@ -144,7 +150,6 @@ function calculateAverageAndSetColorRoutes(result) {
 
 function manageRoutesColor(sumAirValues,cantAirValues, route,routePos){
 	var average = sumAirValues/cantAirValues;
-
 	//This conditions are for painting the routes with the color that was parametrized in the top of this file
 	if (average < closerMargin.value) {
 		paintRoute(closerMargin.color, route);
@@ -155,6 +160,7 @@ function manageRoutesColor(sumAirValues,cantAirValues, route,routePos){
 	}
 	return average;
 }
+
 /**
 * This method paints the routes that are called Polylines
 */
@@ -165,7 +171,6 @@ function paintRoute(color, route){
 		strokeWeight: lineWeight
 	});
 	var bounds = new google.maps.LatLngBounds();
-
 	//This code takes the parts of the routes and paints it
 	var legs = route.legs;
 	for (i = 0; i < legs.length; i++) {
