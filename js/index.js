@@ -72,7 +72,7 @@ function runRefreshTask(type){
 		if(type != "BICYCLING"){
 			calculateAverageAndSetColorRoutes(actualRoutes);
 		} else{
-			callDrawBikePath();
+			calculateBykeAverageAndSetColorRoutes();
 		}
 	}, timerToRefreshRoutes);
 }
@@ -85,7 +85,7 @@ function stopRefreshingRoutes(){
 }
 
 /**
-* This method is responsible of getting latitude and longitude based on text direction, and sending to myRoutes.js to later calculate best route 
+* This method is responsible of getting latitude and longitude based on text direction, and sending to myRoutes.js to later calculate best route
 */
 function codeAddress(address,fromOrTo,selectedMode){
 	geocoder.geocode( {address:address}, function(results, status){

@@ -156,10 +156,3 @@ function paintMyBestRoute(arrCoord, color, map){
 function cleanFromAndTo(){
   from_lat = from_lng = to_lat = to_lng = null;
 }
-
-/**
-* This function is for refreshing bykes routes
-*/
-function callDrawBikePath(){
-  calculateBykeAverageAndSetColorRoutes();
-}

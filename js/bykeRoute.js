@@ -1,4 +1,4 @@
-var keyGraphopper = "233693a8-be91-4ca0-b2ed-0a489e74f038"; //CHANGE GRAPHOOPPER API KEY. This is one of my own for testing
+var keyGraphopper = "5e826b21-c5c7-4bc6-9bca-065ee4d76687"; //CHANGE GRAPHOOPPER API KEY. This is one of my own for testing
 var bykeElementsData;
 
 /**
@@ -20,6 +20,7 @@ function loadBikeData(graphData){
 * Similar as we did for calculating average for google maps routes, this is for bykes routes. Really Similar but not equal
 */
 function calculateBykeAverageAndSetColorRoutes() {
+	if(bykeElementsData == null) return;
 	var result = bykeElementsData;
 	var table = "<table style='width: 100%''><colgroup><col span='1' style='width: 50%;'><col span='1' style='width: 50%;'></colgroup><tr><th>Route</th><th>Average Quality Air</th>"; //This line makes the HTML table for the routes and averages
 	var sumAirValues = 0;
